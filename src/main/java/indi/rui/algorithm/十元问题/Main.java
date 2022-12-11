@@ -1,6 +1,6 @@
 package indi.rui.algorithm.十元问题;
 
-import lombok.extern.slf4j.Slf4j;
+import indi.rui.algorithm.TimeUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -11,20 +11,21 @@ import java.util.*;
  */
 public class Main {
 
-    private static final int MONEY_TEN = 10;
-    private static final int MONEY_FIVE = 5;
-    private static final int MONEY_TWO = 2;
-    private static final int MONEY_ONE = 1;
+    private static final int[] rewards = new int[]{100, 50, 20, 10, 5, 2, 1};
 
 
     public static void main(String[] args) {
         Set<String> allMethod = new LinkedHashSet<>();
-        allMethod.add(MONEY_TEN + "");
-        supply(10, new ArrayList<>(), allMethod);
+        long begin = System.currentTimeMillis();
+        supply(40, new ArrayList<>(), allMethod);
+        long calcEnd = System.currentTimeMillis();
         int count = 1;
         for (String method : allMethod) {
             System.out.println("方式" + count++ + ": " + method);
         }
+        long printEnd = System.currentTimeMillis();
+        System.out.println("计算耗时：" + TimeUtil.getDuration(calcEnd - begin));
+        System.out.println("打印耗时：" + TimeUtil.getDuration(printEnd - calcEnd));
     }
 
     private static void supply(int supply, List<Integer> moneyList, Set<String> allMethod) {
@@ -32,20 +33,12 @@ public class Main {
             Collections.sort(moneyList, Comparator.reverseOrder());
             allMethod.add(StringUtils.join(moneyList, ","));
         }
-        if (supply >= MONEY_FIVE) {
-            List<Integer> newMoneyList = new ArrayList<Integer>(moneyList);
-            newMoneyList.add(MONEY_FIVE);
-            supply(supply - MONEY_FIVE, newMoneyList, allMethod);
-        }
-        if (supply >= MONEY_TWO) {
-            List<Integer> newMoneyList = new ArrayList<Integer>(moneyList);
-            newMoneyList.add(MONEY_TWO);
-            supply(supply - MONEY_TWO, newMoneyList, allMethod);
-        }
-        if (supply >= MONEY_ONE) {
-            List<Integer> newMoneyList = new ArrayList<Integer>(moneyList);
-            newMoneyList.add(MONEY_ONE);
-            supply(supply - MONEY_ONE, newMoneyList, allMethod);
+        for (int i = 0; i < rewards.length; i++) {
+            if (supply >= rewards[i]) {
+                List<Integer> newMoneyList = new ArrayList<Integer>(moneyList);
+                newMoneyList.add(rewards[i]);
+                supply(supply - rewards[i], newMoneyList, allMethod);
+            }
         }
     }
 }
